@@ -1,16 +1,102 @@
-<!doctype html>
+<!DOCTYPE HTML>
 <html>
-  <head>
-    <meta charset='utf-8' />
-    <script src="http://webapi.amap.com/maps?v=1.3&key=fa4a4d6899ee729616e631947bd56979" type="text/javascript"></script>
-  </head>
-  <body>
-    <div id='container'>
-    
-    </div>
-  </body>
-  <script>
-  var lnt = AMap.LngLat(lng:120,lat:43)
-    AMap.Map('container', {view:{center:lnt},zooms:[3,4,5,6,9,11,14,17,19]})
-  </script>
-</html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>经纬度坐标与地图容器像素坐标相互转换</title>
+	<style type="text/css">
+		body{
+			margin:0;
+			height:100%;
+			width:100%;
+			position:absolute;
+		}
+		#mapContainer{
+			position: absolute;
+			top:0;
+			left: 0;
+			right:0;
+			bottom:150px;
+		}
+		
+		#btnDiv{
+			position:absolute;
+			bottom: 0;
+			left:20px;
+			height:150px;
+			font-size:12px;
+		}
+		
+		#btnDiv input{
+			height:23px;
+			outline:none;
+			border:1px solid #ddd;
+			padding-left:5px;
+			border-radius:3px;
+		}
+		
+		#btnDiv input[type='button']{
+			height:28px;
+			line-height:28px;
+			outline:none;
+			text-align:center;
+			padding-left:5px;
+			padding-right:5px;
+			color:#FFF;
+			background-color:#0D9BF2;
+			border:0;
+			border-radius: 3px;
+			margin-top:5px;
+			margin-left:5px;
+			cursor:pointer;
+			margin-right:10px;
+		}
+	</style>
+</head>
+<body>
+	<div id="mapContainer"></div>
+	<div id="btnDiv">
+		<div>
+			<br>地图经纬度坐标：(<b>鼠标左键在地图上单击获取经纬度坐标</b>)	
+			<br>X：<input type="text" id="lngX" name="lngX"/>&nbsp;Y：<input type="text" id="latY" name="latY"/>
+			<br>地图容器像素坐标：
+			<br>X：<input type="text" id="pixelx" name="pixelx"/>&nbsp;Y：<input type="text" id="pixely" name="pixely"/>
+		</div>
+		<div>
+			<input id="lng2x" type="button" value="经纬度坐标转换成容器像素坐标"/>  
+			<input id="x2lng" type="button" value="容器像素坐标转换成经纬度坐标"/> 
+		</div>
+	</div>
+	
+	<script type="text/javascript" src="http://webapi.amap.com/maps?v=1.3&key=fa4a4d6899ee729616e631947bd56979"></script>
+	<script type="text/javascript">
+		//初始化地图对象，加载地图
+		var map = new AMap.Map('mapContainer', {
+			resizeEnable: true
+		});
+		AMap.event.addListener(map,'click',getLnglat);	
+		//鼠标在地图上点击，获取经纬度坐标
+		function getLnglat(e){  
+			document.getElementById('lngX').value = e.lnglat.getLng();  
+			document.getElementById('latY').value = e.lnglat.getLat();   
+		}
+		
+		//经纬度坐标转换为容器像素坐标
+		document.getElementById('lng2x').onclick = function(){
+			var px = document.getElementById('lngX').value;  
+			var py = document.getElementById('latY').value;  
+			var pixel = map.lnglatTocontainer(new AMap.LngLat(px,py));  
+			document.getElementById('pixelx').value = pixel.getX();  
+			document.getElementById('pixely').value = pixel.getY();  
+		};
+		
+		//容器像素坐标转换为经纬度坐标
+		document.getElementById('x2lng').onclick = function(){
+			var lnglatX = parseInt(document.getElementById('pixelx').value);  
+			var lnglatY = parseInt(document.getElementById('pixely').value);  
+			var ll = map.containTolnglat(new AMap.Pixel(lnglatX,lnglatY));  
+			document.getElementById('lngX').value = ll.getLng();  
+			document.getElementById('latY').value = ll.getLat();  
+		};
+	</script>
+</body>
+</html>		
